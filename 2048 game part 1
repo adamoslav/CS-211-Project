@@ -1,0 +1,70 @@
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+#include <vector>
+
+using namespace std;
+
+int i, j;
+int board [4][4]; //board dimensions
+int directionRow[] = {1, 0, -1, 0};
+int directionColumn[] = {0, 1, 0, -1};
+
+pair<int, int> generatePositionForRandomNumber(){
+    int occupied = 1;
+    int row, column;
+    while (occupied){
+        row = rand() % 4;
+        column = rand() % 4;
+        if (board[row][column] == 0){
+            occupied = 0;
+        }
+    }
+    return make_pair(row, column);
+}
+
+void newGame(){ // function for new game
+    for (int i = 0; i < 4; i++){
+        for (int j = 0; j < 4; j++){
+            board[i][j] = 0;
+        }
+    }
+    pair<int, int> position = generatePositionForRandomNumber();
+    board[position.first][position.second] = 2;
+}
+void drawBoard(){// function to print the board
+    cout << "Rules: The player must combine tiles containing the same numbers until they reach the number 2048." << endl;
+    cout << endl;
+    for (i = 0; i < 4; i++){
+        for (j = 0; j < 4; j++){
+            if (board[i][j] == 0){
+                cout << " " << " | ";
+            }
+            else {
+                cout << board[i][j];
+            }
+        }
+        cout << endl;
+        cout << "--------------- \n";
+    }
+    cout << "Commands: " << endl;
+    cout << "n: new game, w: up, s: down, a: left, d: right, q: quit" << endl;
+    cout << "Move: ";
+}
+
+
+void game(){
+    newGame();
+    while (true){
+        drawBoard();
+        char move;
+        cin >> move;
+    }
+    
+}
+
+int main(){
+    game();
+    
+    return 0;
+}
