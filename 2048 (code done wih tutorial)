@@ -1,0 +1,145 @@
+//
+//  main.cpp
+//  
+//
+//  Created by Adam Balatka on 11/7/23.
+//
+
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+#include <iomanip>
+
+
+using namespace std;
+
+int i, j; // declaration of i and j integer variables for "for loops" in the code
+int board [4][4]; //board dimensions
+int directionLine[] = {1, 0, -1, 0}; // directional mapping for row
+int directionColumn[] = {0, 1, 0, -1}; // directional mapping for column
+
+pair<int, int> generatePositionForRandomNumber(){ // function to generate a location for empty cell on the board for
+    int occupied = 1;
+    int row, column;
+    while (occupied){
+        row = rand() % 4;
+        column = rand() % 4;
+        if (board[row][column] == 0){
+            occupied = 0;
+        }
+    }
+    return make_pair(row, column);
+}
+
+void addNumber(){
+    pair<int, int> position = generatePositionForRandomNumber();
+    board[position.first][position.second] = 2;
+}
+
+
+void newGame(){ // function for new game
+    for (int i = 0; i < 4; i++){
+        for (int j = 0; j < 4; j++){
+            board[i][j] = 0;
+        }
+    }
+    addNumber();
+}
+
+
+void drawBoardWithInstructions(){// function to print the board with instructions how to play the game
+    cout << "Rules: The player must combine tiles containing the same numbers until they reach the number 2048." << endl;
+    cout << "n: new game, w: up, s: down, a: left, d: right, q: quit" << endl;
+    cout << endl;
+    //system("clear"); or system("cls");
+    for (i = 0; i < 4; i++){
+        for (j = 0; j < 4; j++){
+            if (board[i][j] == 0){
+                cout << setw(4) << " . ";
+            }
+            else {
+                cout << setw(4) << board[i][j];
+            }
+        }
+        cout << endl;
+        cout << "--------------- \n";
+    }
+    
+    
+}
+
+bool canDoMove(int line, int column, int nextLine, int nextColumn){
+    if (board[line][column] == 0 || nextLine < 0 || nextColumn < 0 || nextLine >=4 || nextColumn >= 4 || (board[line][column] != board[line][column] && board[nextLine][nextColumn] != 0))
+        return false;
+    return true;
+    
+}
+
+void applyMove(int direction){
+    int startLine = 0, startColumn = 0;
+    int stepLine = 1, stepColumn = 1;
+    if (direction == 0){
+        startLine = 3;
+        stepLine = -1;
+    }
+    if (direction == 1){
+        startColumn = 3;
+        stepColumn = -1;
+    }
+    int movePossible = 0;
+    int canAddPiece = 0;
+    do{
+        movePossible = 0;
+        for (i = startLine; i >= 0 && i < 4; i +=stepLine)
+            for (j = startColumn; j >= 0 && j < 4; j += stepColumn){
+                int nextI = i + directionLine[direction];
+                int nextJ = j + directionColumn[direction];
+                if (canDoMove(i, j, nextI, nextJ)){
+                    board[nextI][nextJ] += board[i][j];
+                    board[i][j] = 0;
+                    movePossible = 1;
+                    canAddPiece = 1;
+                }
+            }
+    }while (movePossible);
+
+    if (canAddPiece){
+        addNumber();
+    }
+}
+
+
+int main(){
+    
+    char commandToDirection[128]; // char variable that connects the char variable to the corresponding number
+    commandToDirection['s'] = 0;
+    commandToDirection['d'] = 1;
+    commandToDirection['w'] = 2;
+    commandToDirection['a'] = 3;
+    newGame();
+    while (true){
+        drawBoardWithInstructions();
+        char command; // declaring char variable for the move
+        cin >> command; // receiving input to move the numbers across the board
+        if (command == 'n'){
+            newGame();
+        }
+        else if (command == 'q'){
+            break;
+        }
+        else{
+            int currentDirection = commandToDirection[command];
+            applyMove(currentDirection);
+        }
+    }
+    return 0;
+}
+
+
+// work to be done:
+// play with the board to make the game look nice
+// write conditions for the win (reaching 2048)
+// after certain score is reached, need to make a function that will randomly generate either 2 or 4
+// need to implement commands to have the board outputted only once while being updated (line 54
+
+
